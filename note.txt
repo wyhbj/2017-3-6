@@ -85,3 +85,29 @@ ajax:
 			span.innerHTML = ajax.responseText;
 		}
 	}
+	会不会ajax，这个技术如何实现的并不是重点，重点在于，拿到数据之后如何处理数据
+	通过这5步拿到这些数据
+	var json =JSON.parse(ajax.responseText);
+	var json = eval('('+ajax.responseText+')');
+	var json = (new Function('','return'+ajax.responseText))();
+	if(json.code){ //0
+		user.style.border = '1px solid red';
+	}else{
+		user.style.border = '1px solid green';
+	}
+	span.innerHTML = json.msg;
+	eval() 函数可计算某个字符串，并执行其中的的 JavaScript 代码 
+	在代码本身没错，但是报错的情况下，用括号包一下。
+	注意：
+		eval容易被注入病毒。慎用!
+	new Function('参数','字符串'); 也是可以将字符串执行成js代码。
+	直接new内置对象，性能略低。
+	同步：
+		同步在send发送后，需要等待服务器处理完毕（在完毕前不会执行后续的代码）
+		提交请求->等待服务器处理->处理完毕返回 这个期间客户端浏览器不能干任何事
+	异步: 请求通过事件触发->服务器处理（这是浏览器仍然可以作其他事情）->处理完毕
+		异步在send发送后，不需要等待服务器处理完毕（在完毕前会执行后续的代码）
+	如果解析xml:
+		ajax.responsXML来解析XML数据 -> 自动就转了DOM结构，可以通过DOM的获取方式去获取数据。
+		在IE下，children是不支持的，用tagName来获取
+		ajax.responseXML.getElementsByTagName('content')[0];	
