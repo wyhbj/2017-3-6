@@ -110,4 +110,59 @@ ajax:
 	如果解析xml:
 		ajax.responsXML来解析XML数据 -> 自动就转了DOM结构，可以通过DOM的获取方式去获取数据。
 		在IE下，children是不支持的，用tagName来获取
-		ajax.responseXML.getElementsByTagName('content')[0];	
+		ajax.responseXML.getElementsByTagName('content')[0];
+	状态码:
+		表示网页服务器HTTP响应状态
+	最常用的：
+		2字开头的  200-207    成功
+		4字开头的就是报错
+		5字开头的，服务器错误
+		ajax.status可以获取到状态码，通过状态码就能知道本次请求是否真的被服务器接受（是否成功）。
+	对于ajax每步操作完成都有相应的数字返回，可以拿来做检测判断
+	0-4
+	除了第一步是检测不到的，别的都能检测
+	ajax.readyState
+	0-3其实不重要，重要的是4,4代表整个请求完成
+	ajax.status  是否成功    2字开头
+	ajax.readyState 请求是否完成   4
+	onreadystatechange：跟onload类似（所有浏览器都兼容）
+	对于ajax每步操作完成都有相应的数字返回，可以拿来做检测判断
+	0: 请求未初始化
+	1: 服务器连接已建立
+	2: 请求已接收
+	3: 请求处理中
+	4: 请求已完成，且响应已就绪
+	onload（低版本IE不兼容）  只能看到第5步  数字4。
+	ajax.onreadystatechange = function(){
+		if(ajax.readyState == 4){
+			alert(ajax.readyState);
+		}
+	}
+例子：封装
+	user.onblur = function(){
+		ajax('get','php/get.php','user='+user.value,function(data){
+			span.innerHTML = data;
+		},function(data){
+			alert(data)
+		});
+	}
+	function ajax(methed,url,data,succ,fail){
+		var ajax = new XMLHttpRequest();
+		if(methed == 'get'){
+			ajax.open(methed,url+'?'+data);
+			ajax.send();
+		}else{
+			ajax.open(methed,url);
+			ajax.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+			ajax.send(data);
+		}
+		ajax.onreadystatechange = function(){
+			if(ajax.readyState == 4){
+				if(ajax.status >= 200 && ajax.status<=207){
+					succ && succ(ajax.responseText);
+				}else{
+					fail && fail(ajax.status);
+				}
+			}
+		}
+	}	
